@@ -101,7 +101,7 @@ app.get("/", (req, res) => {
   res.send("Bot está online!");
 });
 
-app.listen(3000, () => {
+app.listen(process.env.PORT || 3000, () => {
   console.log("Servidor web iniciado");
 });
 
