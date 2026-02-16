@@ -5,5 +5,7 @@ const client = new Client({
 });
 
 client.once('ready', () => {
-  console.log('Bot está 
-    client.login(process.env.TOKEN);
+  console.log('Bot está online!');
+});
+
+client.login(process.env.TOKEN);
