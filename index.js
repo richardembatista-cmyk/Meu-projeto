@@ -83,7 +83,20 @@ client.on("interactionCreate", async interaction => {
   });
 
   await channel.send(`🎟 Ticket criado para ${interaction.user}\nProduto: ${product.name}`);
-  await interaction.reply({ content: "Ticket criado!", ephemeral: true });
+  await interaction.reply({ content: "Ticket criado!", ephemeral: 
+    ()
+      const express = require("express");
+const app = express();
+
+app.get("/", (req, res) => {
+  res.send("Bot está online!");
+});
+
+app.listen(3000, () => {
+  console.log("Servidor web iniciado");
+});
+  app.listen(3000, () => {
+  console.log("Servidor web iniciado");
 });
 
 client.login(process.env.TOKEN);
