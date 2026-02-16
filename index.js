@@ -8,6 +8,9 @@ const {
   ButtonStyle 
 } = require("discord.js");
 
+const express = require("express");
+const app = express();
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -73,29 +76,32 @@ client.on("interactionCreate", async interaction => {
       },
       {
         id: interaction.user.id,
-        allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages],
+        allow: [
+          PermissionsBitField.Flags.ViewChannel,
+          PermissionsBitField.Flags.SendMessages
+        ],
       },
       {
         id: OWNER_ID,
-        allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages],
+        allow: [
+          PermissionsBitField.Flags.ViewChannel,
+          PermissionsBitField.Flags.SendMessages
+        ],
       },
     ],
   });
 
   await channel.send(`🎟 Ticket criado para ${interaction.user}\nProduto: ${product.name}`);
-  await interaction.reply({ content: "Ticket criado!", ephemeral: 
-    ()
-      const express = require("express");
-const app = express();
+  await interaction.reply({ content: "Ticket criado!", ephemeral: true });
+});
 
+
+// 🔥 Servidor web para Railway não derrubar o bot
 app.get("/", (req, res) => {
   res.send("Bot está online!");
 });
 
 app.listen(3000, () => {
-  console.log("Servidor web iniciado");
-});
-  app.listen(3000, () => {
   console.log("Servidor web iniciado");
 });
 
