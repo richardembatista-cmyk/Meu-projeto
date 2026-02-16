@@ -1,15 +1,12 @@
 const {
   Client,
   GatewayIntentBits,
-  PermissionsBitField,
-  ChannelType,
-  ActionRowBuilder,
   ButtonBuilder,
-  ButtonStyle
+  ButtonStyle,
+  ActionRowBuilder,
+  ChannelType,
+  PermissionsBitField
 } = require("discord.js");
-
-const express = require("express");
-const app = express();
 
 const client = new Client({
   intents: [
@@ -19,49 +16,49 @@ const client = new Client({
   ]
 });
 
-// 🔧 CONFIGURAÇÕES
-const OWNER_ID = "COLOCA_SEU_ID_AQUI";
-const CATEGORY_ID = "COLOCA_ID_DA_CATEGORIA_AQUI";
+const TOKEN = process.env.TOKEN;
 
+// 🔒 CONFIG
+const OWNER_ID = "1471774624684445696";
+const TICKET_CATEGORY_ID = "1470482643035619634";
+
+// 📦 Produtos
 let products = [
-  { name: "Produto A", price: 10, stock: 5 },
-  { name: "Produto B", price: 20, stock: 3 }
+  { name: "Produto 1", price: 10, stock: 5 },
+  { name: "Produto 2", price: 20, stock: 3 }
 ];
 
-// ✅ BOT ONLINE
 client.once("ready", () => {
   console.log(`✅ Bot online como ${client.user.tag}`);
 });
 
-// ✅ COMANDO !painel
+// 📌 Criar painel (SÓ VOCÊ pode usar, em QUALQUER canal)
 client.on("messageCreate", async (message) => {
-  if (message.author.bot) return;
+  if (message.author.id !== OWNER_ID) return;
+  if (message.content !== "!painel") return;
 
-  if (message.content === "!painel") {
+  const buttons = products.map((p, i) =>
+    new ButtonBuilder()
+      .setCustomId(`buy_${i}`)
+      .setLabel(`${p.name} - R$${p.price}`)
+      .setStyle(ButtonStyle.Primary)
+      .setDisabled(p.stock <= 0)
+  );
 
-    const buttons = products.map((p, i) =>
-      new ButtonBuilder()
-        .setCustomId(`buy_${i}`)
-        .setLabel(`${p.name} - R$${p.price}`)
-        .setStyle(ButtonStyle.Primary)
-    );
+  const row = new ActionRowBuilder().addComponents(buttons);
 
-    const row = new ActionRowBuilder().addComponents(buttons);
-
-    await message.channel.send({
-      content: "🛒 **Painel de Produtos**",
-      components: [row]
-    });
-  }
+  await message.channel.send({
+    content: "🛒 **Painel de Produtos**",
+    components: [row]
+  });
 });
 
-// ✅ QUANDO CLICAR NO BOTÃO
+// 🛒 Clique no botão
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isButton()) return;
 
   const index = parseInt(interaction.customId.split("_")[1]);
   const product = products[index];
-
   if (!product) return;
 
   if (product.stock <= 0) {
@@ -73,13 +70,15 @@ client.on("interactionCreate", async (interaction) => {
 
   product.stock--;
 
-  const channel = await interaction.guild.channels.create({
-    name: `ticket-${product.name}-${interaction.user.username}`,
+  const guild = interaction.guild;
+
+  const ticketChannel = await guild.channels.create({
+    name: `ticket-${interaction.user.username}`,
     type: ChannelType.GuildText,
-    parent: CATEGORY_ID,
+    parent: TICKET_CATEGORY_ID,
     permissionOverwrites: [
       {
-        id: interaction.guild.id,
+        id: guild.roles.everyone,
         deny: [PermissionsBitField.Flags.ViewChannel]
       },
       {
@@ -99,26 +98,14 @@ client.on("interactionCreate", async (interaction) => {
     ]
   });
 
-  await channel.send(
-    `🎉 ${interaction.user} comprou **${product.name}** por R$${product.price}\n\nAguarde atendimento.`
+  await ticketChannel.send(
+    `🎫 ${interaction.user}\nProduto: **${product.name}**\nValor: R$${product.price}`
   );
 
   await interaction.reply({
-    content: `✅ Ticket criado: ${channel}`,
+    content: `✅ Ticket criado: ${ticketChannel}`,
     ephemeral: true
   });
 });
 
-// 🔐 TOKEN
-client.login(process.env.TOKEN);
-
-// 🌍 Servidor para Railway não dormir
-app.get("/", (req, res) => {
-  res.send("Bot rodando!");
-});
-
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log("🌎 Servidor web ativo na porta " + PORT);
-});
+client.login(TOKEN);
